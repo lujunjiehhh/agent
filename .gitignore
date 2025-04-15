@@ -144,3 +144,5 @@ cython_debug/
 env_configs/
 data/
 logs/
+node_modules
+/results/

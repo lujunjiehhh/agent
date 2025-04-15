@@ -1,0 +1,1 @@
+fastapi==0.109.2 uvicorn==0.27.1 python-multipart==0.0.9 python-jose==3.3.0 passlib==1.7.4 sqlalchemy==2.0.27 pydantic==2.6.1 python-dotenv==1.0.1 networkx==3.2.1 pandas==2.2.0 numpy==1.26.4 python-magic==0.4.27

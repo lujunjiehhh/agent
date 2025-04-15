@@ -1,0 +1,1 @@
+python-docx unstructured chromadb langchain-openai rank\_bm25 pdf2image opencv-python unstructured\_inference pikepdf openpyxl python-dotenv jsonlines markdown datasets rouge word2number ragatouille unstructured\_pytesseract pytesseract

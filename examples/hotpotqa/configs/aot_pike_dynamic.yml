@@ -1,0 +1,126 @@
+# Environment Variable Setting
+################################################################################
+dotenv_path: .env
+
+# API Provider Setting
+################################################################################
+api_provider: openai
+
+# Logging Setting
+################################################################################
+log_dir: logs/hotpotqa/aot_pike_dynamic
+log_level: INFO
+
+# Experiment Setting
+################################################################################
+experiment_name: aot_pike_dynamic
+test_jsonl_filename: null
+test_rounds: 5
+
+# Metadata Setting
+################################################################################
+metadata:
+  task: hotpotqa
+  model: aot_pike_dynamic
+  description: "AoT-PIKE动态原子查询版本，启用动态原子生成"
+
+# Workflow Setting
+################################################################################
+workflow:
+  module_path: pikerag.workflows
+  class_name: AoTPikeWorkflow
+  args:
+    max_iterations: 5
+    max_dag_depth: 3
+    
+    # 仅启用动态原子生成
+    enable_memory: false
+    enable_ensemble: false
+    enable_retry: false
+    enable_parallel: false
+    enable_plugin_mode: false
+
+# LLM Setting
+################################################################################
+llm_client:
+  type: openai
+  config:
+    model: ${OPENAI_MODEL_NAME}
+    temperature: 0.0
+    max_tokens: 2048
+    top_p: 1.0
+    frequency_penalty: 0.0
+    presence_penalty: 0.0
+
+# Retriever Setting
+################################################################################
+retriever:
+  module_path: pikerag.knowledge_retrievers
+  class_name: AoTPikeRetriever
+  args:
+    retrieve_k: 5
+    retrieve_score_threshold: 0.5
+    atom_retrieve_k: 3
+    
+    # 启用动态原子生成
+    aot_config:
+      markov_state_threshold: 0.8
+      enable_dynamic_atoms: true
+      enable_graph_update: true
+      max_dynamic_atoms_per_node: 5
+    
+    # 禁用并行处理
+    enable_parallel: false
+    max_parallel_tasks: 1
+    
+    vector_store:
+      collection_name: hotpotqa_aot_pike_dynamic
+      persist_directory: data/vector_store
+      
+      id_document_loading:
+        module_path: pikerag.utils.data_loader
+        func_name: load_hotpotqa_documents
+        args:
+          data_path: data/hotpotqa/train.json
+      
+      id_atom_loading:
+        module_path: pikerag.utils.data_loader
+        func_name: load_hotpotqa_atoms
+        args:
+          data_path: data/hotpotqa/train.json
+          atom_tag: question
+      
+      embedding_setting:
+        type: openai
+        config:
+          model: ${OPENAI_EMBEDDING_MODEL_NAME}
+          batch_size: 32
+
+# Testing Suite Setting
+################################################################################
+test_loading:
+  module: pikerag.utils.data_protocol_utils
+  name: load_testing_suite
+  args:
+    filepath: data/hotpotqa/dev_500.jsonl
+
+# Evaluator Setting
+################################################################################
+evaluator:
+  metrics:
+    - ExactMatch
+    - F1
+    - Precision
+    - Recall
+    - LLM 
+
+# Prompt Setting
+################################################################################
+# 添加QA协议配置（解决KeyError: 'qa_protocol'问题）
+qa_protocol:
+  module_path: pikerag.prompts.qa
+  attr_name: generation_qa_protocol
+  template_partial:
+    system_prompt: "你是一个擅长回答问题的AI助手。请根据提供的信息回答问题。"
+
+# 使用默认的AoT-PIKE协议 

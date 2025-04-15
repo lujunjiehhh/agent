@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT license.
 
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
 
 from pikerag.knowledge_retrievers.chunk_atom_retriever import AtomRetrievalInfo
 from pikerag.prompts import MessageTemplate, BaseContentParser, CommunicationProtocol
@@ -145,20 +145,20 @@ class AtomQuestionSelectionParser(BaseContentParser):
             "atom_list_str": atom_list_str,
         }
 
-    def decode(self, content: str, **kwargs) -> Tuple[bool, str, AtomRetrievalInfo]:
-        try:
-            output = parse_json(content)
-            thinking: str = output["thinking"]
-            question_idx = output["question_idx"]
-            if question_idx is not None and question_idx > 0 and question_idx <= len(self._atom_info_candidates):
-                chosen_info = self._atom_info_candidates[question_idx - 1]
-                return True, thinking, chosen_info
-            else:
-                return False, thinking, None
-        except Exception as e:
-            print(f"[AtomQuestionSelectionParser] content to decode: {content}")
-            print(f"Exception: {e}")
-            return False, "", None
+def decode(self, content: str, **kwargs) -> Tuple[bool, str, Optional[AtomRetrievalInfo]]:
+    try:
+        output = parse_json(content)
+        thinking: str = output["thinking"]
+        question_idx = output["question_idx"]
+        if question_idx is not None and 0 < question_idx <= len(self._atom_info_candidates):
+            chosen_info = self._atom_info_candidates[question_idx - 1]
+            return True, thinking, chosen_info
+        else:
+            return False, thinking, None  # 保留原逻辑，但类型允许 None
+    except Exception as e:
+        print(f"[AtomQuestionSelectionParser] content to decode: {content}")
+        print(f"Exception: {e}")
+        return False, "", None  # 确保异常时也返回 None
 
 
 atom_question_selection_protocol = CommunicationProtocol(
@@ -227,12 +227,12 @@ class ChunkSelectionParser(BaseContentParser):
             "chunk_list_str": chunk_list_str,
         }
 
-    def decode(self, content: str, **kwargs) -> Tuple[bool, str, AtomRetrievalInfo]:
+    def decode(self, content: str, **kwargs) -> Tuple[bool, str, Optional[AtomRetrievalInfo]]:
         try:
             output = parse_json(content)
             thinking: str = output["thinking"]
             paragraph_idx = output["paragraph_idx"]
-            if paragraph_idx is not None and paragraph_idx > 0 and paragraph_idx <= len(self._atom_info_candidates):
+            if paragraph_idx is not None and 0 < paragraph_idx <= len(self._atom_info_candidates):
                 chosen_info = self._atom_info_candidates[paragraph_idx - 1]
                 return True, thinking, chosen_info
             else:

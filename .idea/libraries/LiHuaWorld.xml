@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="LiHuaWorld">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/minirag/dataset/LiHua-World/data/LiHuaWorld.zip!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

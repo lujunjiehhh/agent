@@ -1,1 +1,0 @@
-bs4 chromadb dacite jsonlines langchain langchain\_chroma langchain\_community langchain\_huggingface markdown openai openpyxl pandas pickledb rank\_bm25 rouge sentence-transformers spacy tabulate torch tqdm transformers unstructured word2number
